@@ -25,6 +25,7 @@ func InitDatabase() {
 		log.Fatal(err)
 	}
 	db = con
+
 	_, err = db.Exec(`CREATE  TABLE Users (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL ,
@@ -33,7 +34,31 @@ func InitDatabase() {
     Waifu TEXT,
     Password BLOB,
     PasswordSalt BLOB
-)`)
+	)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec(` CREATE TABLE Messages (
+	 Id INTEGER PRIMARY KEY AUTOINCREMENT,
+	 Text TEXT,
+	 MessageDate TEXT,
+	 SenderId INTEGER,
+	 ReceiverId INTEGER,
+	 Foreign Key (ReceiverId) REFERENCES Users(Id)
+	 FOREIGN KEY (SenderId) REFERENCES Users(Id)
+	 );`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec(` CREATE Table UserMessages (
+	 Id INTEGER PRIMARY KEY AUTOINCREMENT ,
+	UserId,
+	MessageId,
+	Foreign Key (UserId) REFERENCES Users(Id),
+	FOREIGN KEY (MessageId) REFERENCES Messages(Id)
+	 );`)
 	if err != nil {
 		log.Fatal(err)
 	}
